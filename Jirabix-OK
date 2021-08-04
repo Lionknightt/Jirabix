@@ -1,0 +1,77 @@
+import json
+import requests
+import sys
+from requests.auth import HTTPBasicAuth
+
+name = sys.argv[1]
+Descrip = sys.argv[2]
+Date = sys.argv[3]
+Time = sys.argv[4]
+Severity = sys.argv[5]
+Host = sys.argv[6]
+
+
+def main(name, Descrip, Date, Time, Severity, Host):
+    url = "https://sd.mutantbr.com/rest/api/2/issue"
+    auth = HTTPBasicAuth("Usuário", "Senha")
+    headers = {
+    "Accept": "application/json",
+    "Content-Type": "application/json"
+      }
+    payload = json.dumps( {
+      "fields": {
+      "summary": name,
+      "issuetype": {
+      ### ID de INCIDENTE DE TI
+      "id": "10400"
+      },
+      "project": {
+      "id": "10403",
+      "key": "TI"
+      },
+      "description": f"Este Chamado é aberto de forma automática quando este incidente ocorre!"\
+      f"\n Descriação:{Descrip}"\
+      f"\n Data e horario do Evento:{Date} - {Time}"\
+      f"\n Criticidade do alarme: {Severity}"\
+      f"\n Hostname:{Host}",
+      # "priority": {
+      #   "id": "5"
+      # },
+      ### Site
+      "customfield_10315": {
+      "id": "10252",
+      "value": "Hungria"
+      },
+      ### Categoria
+      "customfield_10400": {
+      "id": "10309"
+      # "value": "Incidente Servidores - (Mem\u00f3ria RAM, CPU, Conversores, Windows e Outros)"
+      },
+      ### Cliente
+      "customfield_10128":{
+      "id": "10071",
+      "value": "Mutant"
+      },
+      ### Vertical
+      "customfield_10309":{
+      "id": "17264",
+      "value": "IT Corp"
+      },
+      ### Telefone
+      "customfield_14503": {
+      "id": "18345",
+      "value": "Corporativo"
+      },
+      "customfield_10304": "NA"
+      }
+      } )
+    response = requests.request (
+      "POST",
+      url,
+      data=payload,
+      headers=headers,
+      auth=auth,
+      verify=False
+      )
+    print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
+main(name, Descrip, Date, Time, Severity, Host)
